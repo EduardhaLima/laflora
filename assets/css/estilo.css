@@ -1,0 +1,107 @@
+/* ===== La Flora Boutique — Design System ===== */
+:root{
+  --verde:#173f2c; --verde-escuro:#0f2e20; --verde-claro:#e3ece6;
+  --creme:#faf8f3; --areia:#f0ede7; --borda:#e6e1d8;
+  --texto:#1d2a22; --texto-suave:#6b726c;
+  --sucesso:#1f8a4c; --erro:#c0392b;
+  --raio:14px; --sombra:0 10px 30px -12px rgba(15,46,32,.25);
+  --serif:"EB Garamond",Georgia,serif; --sans:"Plus Jakarta Sans",system-ui,sans-serif;
+}
+body{background:var(--creme);color:var(--texto);font-family:var(--sans);font-size:.95rem}
+.serif{font-family:var(--serif)}
+.text-verde{color:var(--verde)!important}
+.text-suave{color:var(--texto-suave)!important}
+.bg-areia{background:var(--areia)}
+.eyebrow{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--texto-suave)}
+.btn-verde{background:var(--verde);color:#fff;border-radius:999px;padding:.8rem 1.5rem;font-weight:600;border:0}
+.btn-verde:hover{background:var(--verde-escuro);color:#fff}
+.btn-icone{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:var(--verde);position:relative}
+.btn-icone.cheio{background:var(--verde);color:#fff}
+.badge-carrinho{position:absolute;top:-2px;right:-4px;background:var(--verde);color:#fff;font-size:.6rem;border-radius:999px;padding:1px 5px}
+.form-control,.form-select{background:var(--areia);border:1px solid transparent;border-radius:10px;padding:.75rem 1rem}
+.form-control:focus{background:#fff;border-color:var(--verde);box-shadow:0 0 0 .2rem rgba(23,63,44,.12)}
+.input-group-text{background:var(--areia);border:0;color:var(--texto-suave)}
+.input-group .form-control{border-left:0}
+.form-label{font-weight:600;font-size:.82rem}
+
+/* ===== Autenticação ===== */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
+.auth-card{max-width:1100px;width:100%;background:#fff;border-radius:18px;overflow:hidden;box-shadow:var(--sombra)}
+.auth-lado{position:relative;color:#fff;background-size:cover;background-position:center;padding:2.5rem;display:flex;flex-direction:column;min-height:560px}
+.auth-lado::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,46,32,.75),rgba(15,46,32,.92))}
+.auth-lado>*{position:relative}
+.auth-lado .eyebrow{color:rgba(255,255,255,.75)}
+.auth-lado p{color:rgba(255,255,255,.8)}
+.pill-clara{display:inline-block;background:rgba(255,255,255,.15);border-radius:999px;padding:.3rem .8rem;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.caixa-vidro{background:rgba(255,255,255,.1);border-radius:12px;padding:1rem;backdrop-filter:blur(4px)}
+.auth-form{padding:3rem}
+.caixa-areia{background:var(--areia);border-radius:12px;padding:1.2rem;text-align:center}
+.link-verde{color:var(--verde);font-weight:700;text-decoration:none}
+.link-verde:hover{text-decoration:underline}
+
+/* ===== Topo ===== */
+.topo{background:var(--creme);border-bottom:1px solid var(--borda);position:sticky;top:0;z-index:20}
+.marca{font-family:var(--serif);font-size:1.45rem;color:var(--verde);text-decoration:none;font-weight:500}
+.nav-topo a{color:var(--texto);text-decoration:none;margin-right:1.4rem;padding-bottom:4px}
+.nav-topo a.ativo{border-bottom:2px solid var(--verde);font-weight:600}
+.busca{background:var(--areia);border-radius:999px;border:0;padding:.5rem 1rem .5rem 2.2rem;width:280px}
+.busca-wrap{position:relative}
+.busca-wrap i{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--texto-suave)}
+
+/* ===== Catálogo ===== */
+.filtro{background:var(--areia);border-radius:var(--raio);padding:1.6rem;position:sticky;top:90px}
+.filtro h2{font-family:var(--serif);font-style:italic;color:var(--verde);font-size:1.8rem;line-height:1.1}
+.filtro-item{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:.25rem 0;font-family:var(--serif);font-size:1.25rem;color:var(--texto-suave);text-align:left}
+.filtro-item.ativo{color:var(--verde)}
+.filtro-item.ativo::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--verde)}
+.banner{background:var(--verde);border-radius:var(--raio);color:#fff;min-height:200px;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.banner h1{font-family:var(--serif);font-size:2.3rem;font-weight:400}
+.banner svg{position:absolute;opacity:.35}
+.produto .foto{aspect-ratio:4/5;border-radius:12px;background:var(--areia);border:2px dashed var(--borda);display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--texto-suave);position:relative;overflow:hidden;font-size:.75rem}
+.produto .foto img{width:100%;height:100%;object-fit:cover}
+.produto .add{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border-radius:50%;background:var(--verde-escuro);color:#fff;border:0}
+.produto h3{font-family:var(--serif);font-size:1.3rem;margin:0}
+.produto .preco{font-weight:700;color:var(--verde)}
+.produto small{color:var(--texto-suave);font-size:.75rem}
+.fade-in{animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ===== Rodapé ===== */
+.rodape{background:var(--areia);padding:3rem 0 1.5rem;margin-top:4rem;scroll-margin-top:80px}
+.rodape h6{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--verde)}
+.rodape p,.rodape li{font-size:.85rem;color:var(--texto)}
+
+/* ===== Chatbot ===== */
+.chatbot{position:fixed;right:24px;bottom:0;width:380px;max-width:calc(100vw - 24px);background:#fff;border-radius:14px 14px 0 0;box-shadow:var(--sombra);z-index:50;display:flex;flex-direction:column;max-height:90vh;transition:all .35s ease}
+.chat-topo{background:var(--verde);color:#fff;padding:.8rem 1rem;border-radius:14px 14px 0 0;display:flex;align-items:center;gap:.7rem;cursor:pointer}
+.chat-topo strong{font-family:var(--serif);font-weight:500;font-size:1.05rem}
+.chat-topo small{opacity:.8;font-size:.7rem}
+.chat-corpo{overflow-y:auto;padding:1rem;display:none}
+.chatbot.aberto .chat-corpo,.chatbot.aberto .chat-rodape{display:block}
+.chat-rodape{display:none;border-top:1px solid var(--borda);padding:.6rem}
+.chat-progresso{height:6px;background:var(--areia);border-radius:99px;overflow:hidden}
+.chat-progresso div{height:100%;background:var(--verde);transition:width .4s}
+.balao{background:var(--areia);border-radius:12px;padding:.8rem;font-size:.85rem}
+.pergunta{font-family:var(--serif);font-weight:600;font-size:1rem;margin:1rem 0 .5rem}
+.opcao{display:flex;justify-content:space-between;align-items:center;width:100%;background:var(--creme);border:1px solid var(--borda);border-radius:10px;padding:.6rem .8rem;margin-bottom:.4rem;text-align:left;font-size:.85rem}
+.opcao:hover{border-color:var(--verde)}
+.opcao.selecionada{background:var(--verde-claro);border-color:var(--verde);font-weight:600}
+.opcao-linha{display:flex;gap:.4rem}.opcao-linha .opcao{justify-content:center}
+.opcao-linha .opcao.selecionada{background:var(--verde);color:#fff}
+.recomendacao{background:var(--areia);border-radius:12px;padding:.8rem}
+
+/* ===== Carrinho ===== */
+.etapas span{font-size:.75rem;color:var(--texto-suave)}
+.etapas .num{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--areia);margin-right:4px}
+.etapas .ativa .num{background:var(--verde);color:#fff}
+.painel{background:var(--areia);border-radius:var(--raio);padding:1.5rem}
+.item-carrinho{background:#fff;border-radius:12px;padding:1rem;display:flex;gap:1rem;align-items:center}
+.item-carrinho .mini{width:70px;height:70px;border-radius:8px;background:var(--areia);border:2px dashed var(--borda);flex-shrink:0;overflow:hidden}
+.item-carrinho .mini img{width:100%;height:100%;object-fit:cover}
+.qtd{display:flex;align-items:center;border:1px solid var(--borda);border-radius:999px}
+.qtd button{border:0;background:none;width:28px}
+.cartao-previa{background:#f5efe2;border-radius:12px;padding:1.2rem;font-family:var(--serif);font-style:italic;font-size:1.4rem;color:var(--verde);min-height:220px}
+
+/* ===== Alertas ===== */
+.toast-sucesso{background:var(--sucesso);color:#fff}
+.toast-erro{background:var(--erro);color:#fff}
