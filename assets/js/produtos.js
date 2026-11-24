@@ -1,7 +1,7 @@
 /* Catálogo de buquês disponíveis enquanto os produtos não vêm do backend PHP. */
 const PRODUTOS = [
   {
-    id: "p1",
+    id: "buque-1",
     nome: "Buquê de Gérberas Vibrantes",
     descricao: "Gérberas amarelas e laranjas com astromélias",
     preco: 89,
@@ -11,7 +11,7 @@ const PRODUTOS = [
     img: "Gérberas amarelas e laranjas com astromélias.png",
   },
   {
-    id: "p2",
+    id: "buque-2",
     nome: "Buquê de Rosas e Lisianthus",
     descricao: "Rosas rosa-claro, lisianthus branco e eucalipto",
     preco: 94,
@@ -21,7 +21,7 @@ const PRODUTOS = [
     img: "Rosas rosa-claro, lisianthus branco e eucalipto.webp",
   },
   {
-    id: "p3",
+    id: "buque-3",
     nome: "Buquê de Rosas Cappuccino",
     descricao: "Rosas cappuccino e eucalipto",
     preco: 69,
@@ -31,7 +31,7 @@ const PRODUTOS = [
     img: "Rosas cappuccino e eucalipto.png",
   },
   {
-    id: "p4",
+    id: "buque-4",
     nome: "Buquê de Girassóis e Rosas",
     descricao: "Girassóis, rosas laranjas e solidago",
     preco: 115,
@@ -41,7 +41,7 @@ const PRODUTOS = [
     img: "Girassóis, rosas laranjas e solidago.png",
   },
   {
-    id: "p5",
+    id: "buque-5",
     nome: "Buquê de Peônias e Rosas Brancas",
     descricao: "Peônias rosa-claro, rosas brancas e mosquitinho",
     preco: 78,
@@ -51,7 +51,7 @@ const PRODUTOS = [
     img: "Peônias rosa-claro, rosas brancas e mosquitinho.png",
   },
   {
-    id: "p6",
+    id: "buque-6",
     nome: "Buquê de Dálias Terracota",
     descricao: "Dálias terracota, rosas creme e eucalipto",
     preco: 139,
@@ -61,7 +61,7 @@ const PRODUTOS = [
     img: "Dálias terracota, rosas creme e eucalipto.png",
   },
   {
-    id: "p7",
+    id: "buque-7",
     nome: "Buquê de Tulipas Coloridas",
     descricao: "Tulipas amarelas, laranjas e pink",
     preco: 82,
@@ -71,7 +71,7 @@ const PRODUTOS = [
     img: "Tulipas amarelas, laranjas e pink.png",
   },
   {
-    id: "p8",
+    id: "buque-8",
     nome: "Buquê de Hortênsias Rosadas",
     descricao: "Hortênsias rosadas, lisianthus branco e mini-rosas",
     preco: 99,
@@ -81,7 +81,7 @@ const PRODUTOS = [
     img: "Hortênsias rosadas, lisianthus branco e mini-rosas.png",
   },
   {
-    id: "p9",
+    id: "buque-9",
     nome: "Buquê de Rosas Terracota",
     descricao: "Rosas terracota, leucadendros e eucalipto",
     preco: 105,
