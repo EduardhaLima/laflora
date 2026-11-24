@@ -8,7 +8,7 @@ document.getElementById("form-login").addEventListener("submit", async (e) => {
   if (r.sucesso) {
     sessionStorage.setItem("laflora_usuario", JSON.stringify(r.usuario || { email }));
     mostrarAviso(r.mensagem || "Login realizado!", "sucesso");
-    setTimeout(() => (location.href = "catalogo.html"), 900);
+    setTimeout(() => (location.href = "../catalogo/catalogo.html"), 900);
   } else mostrarAviso(r.mensagem || "Erro ao entrar.", "erro");
 });
 document.querySelectorAll("[data-ver-senha]").forEach((b) => b.addEventListener("click", () => {

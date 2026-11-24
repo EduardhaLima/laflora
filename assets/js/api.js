@@ -15,23 +15,53 @@ async function chamarApi(nome, dados = null, metodo = "POST") {
   }
 }
 
+/* Descarta cadastros de versões da demo que guardavam senhas em texto puro. */
+localStorage.removeItem("laflora_contas");
+
+async function verificarSenhaDemo(senha, sal) {
+  const encoder = new TextEncoder();
+  const chave = await crypto.subtle.importKey("raw", encoder.encode(senha), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({
+    name: "PBKDF2", salt: Uint8Array.from(sal), iterations: 600000, hash: "SHA-256"
+  }, chave, 256);
+  return Array.from(new Uint8Array(bits)).join(",");
+}
+
 /* Respostas simuladas enquanto o PHP não existe */
-function simular(nome, d) {
-  return new Promise((ok) => setTimeout(() => {
+async function simular(nome, d) {
+  await new Promise((resolver) => setTimeout(resolver, 400));
+  if (nome === "login" || nome === "cadastro") {
+    const contas = JSON.parse(sessionStorage.getItem("laflora_contas_demo") || "[]");
+    const conta = contas.find((c) => c.email === d.email);
+    const emailDemo = "demo@laflora.com";
+
+    if (nome === "login" && d.email === emailDemo && d.senha === "12345678") {
+      return { sucesso: true, mensagem: "Bem-vindo(a) à La Flora!", usuario: { nome: "Cliente" } };
+    }
+    if (nome === "login" && !conta) return { sucesso: false, mensagem: "E-mail ou senha incorretos." };
+    if (nome === "cadastro" && (conta || d.email === emailDemo)) {
+      return { sucesso: false, mensagem: "Este e-mail já está cadastrado." };
+    }
+    if (!globalThis.crypto?.subtle) {
+      return { sucesso: false, mensagem: "Abra a demonstração por HTTPS ou localhost para usar o cadastro." };
+    }
+
     if (nome === "login") {
-      const contas = JSON.parse(localStorage.getItem("laflora_contas") || "[]");
-      const conta = contas.find((c) => c.email === d.email && c.senha === d.senha);
-      if (conta || (d.email === "demo@laflora.com" && d.senha === "12345678"))
-        return ok({ sucesso: true, mensagem: "Bem-vindo(a) à La Flora!", usuario: { nome: conta?.nome || "Cliente" } });
-      return ok({ sucesso: false, mensagem: "E-mail ou senha incorretos." });
+      const verificador = await verificarSenhaDemo(d.senha, conta.sal);
+      if (verificador !== conta.verificador) return { sucesso: false, mensagem: "E-mail ou senha incorretos." };
+      return { sucesso: true, mensagem: "Bem-vindo(a) à La Flora!", usuario: { nome: conta.nome } };
     }
-    if (nome === "cadastro") {
-      const contas = JSON.parse(localStorage.getItem("laflora_contas") || "[]");
-      if (contas.some((c) => c.email === d.email)) return ok({ sucesso: false, mensagem: "Este e-mail já está cadastrado." });
-      contas.push(d); localStorage.setItem("laflora_contas", JSON.stringify(contas));
-      return ok({ sucesso: true, mensagem: "Conta criada com sucesso! Faça login." });
+
+    const sal = Array.from(crypto.getRandomValues(new Uint8Array(16)));
+    const verificador = await verificarSenhaDemo(d.senha, sal);
+    const contasAtuais = JSON.parse(sessionStorage.getItem("laflora_contas_demo") || "[]");
+    if (contasAtuais.some((c) => c.email === d.email)) {
+      return { sucesso: false, mensagem: "Este e-mail já está cadastrado." };
     }
-    if (nome === "pedido") return ok({ sucesso: true, mensagem: "Pedido registrado!", pedido_id: Date.now() });
-    ok({ sucesso: true });
-  }, 400));
+    contasAtuais.push({ nome: d.nome, email: d.email, sal, verificador });
+    sessionStorage.setItem("laflora_contas_demo", JSON.stringify(contasAtuais));
+    return { sucesso: true, mensagem: "Conta de teste criada. Faça login nesta mesma aba." };
+  }
+  if (nome === "pedido") return { sucesso: true, mensagem: "Pedido registrado!", pedido_id: Date.now() };
+  return { sucesso: true };
 }

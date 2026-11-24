@@ -1,6 +1,22 @@
 /* Carrinho salvo no navegador */
 const Carrinho = {
-  ler() { return JSON.parse(localStorage.getItem("laflora_carrinho") || "null") ?? [{ id: "cartao", nome: "Cartão Caligráfico Artesanal", descricao: "Papel de algodão prensado 300g", preco: 15, qtd: 1, cartao: true }]; },
+  ler() {
+    const itens = JSON.parse(localStorage.getItem("laflora_carrinho") || "null");
+    if (itens === null) {
+      return [{ id: "cartao", nome: "Cartão Caligráfico Artesanal", descricao: "Papel de algodão prensado 300g", preco: 15, qtd: 1, cartao: true }];
+    }
+
+    const atualizados = itens.flatMap((item) => {
+      if (!/^p[1-9]$/.test(item.id)) return [item];
+      const produto = PRODUTOS.find((p) => p.img === item.img);
+      return produto ? [{ ...item, id: produto.id }] : [];
+    });
+
+    if (atualizados.some((item, indice) => item !== itens[indice]) || atualizados.length !== itens.length) {
+      localStorage.setItem("laflora_carrinho", JSON.stringify(atualizados));
+    }
+    return atualizados;
+  },
   salvar(itens) { localStorage.setItem("laflora_carrinho", JSON.stringify(itens)); Carrinho.atualizarBadge(); },
   limpar() {
     localStorage.removeItem("laflora_carrinho");
@@ -19,5 +35,5 @@ const Carrinho = {
   },
 };
 const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-function exigirLogin() { if (!sessionStorage.getItem("laflora_usuario")) location.href = "login.html"; }
-async function sair() { await chamarApi("logout"); sessionStorage.removeItem("laflora_usuario"); location.href = "login.html"; }
+function exigirLogin() { if (!sessionStorage.getItem("laflora_usuario")) location.href = "../login/login.html"; }
+async function sair() { await chamarApi("logout"); sessionStorage.removeItem("laflora_usuario"); location.href = "../login/login.html"; }

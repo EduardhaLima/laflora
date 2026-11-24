@@ -4,21 +4,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link rel="shortcut icon" href="/assets/img/bouquet-svgrepo-com.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="../assets/css/estilo.css" rel="stylesheet">
+    <link href="../../assets/css/global.css" rel="stylesheet">
+    <link href="login.css" rel="stylesheet">
     <title>Login — La Flora Boutique</title>
 </head>
 
 <body>
     <main class="auth-wrap">
         <div class="auth-card row g-0">
-            <section class="col-lg-5 auth-lado" style="background-image:url(../assets/img/fundo-login.jpg)">
+            <section class="col-lg-5 auth-lado login-lado">
                 <div class="d-flex align-items-center gap-2 mb-5"><i class="bi bi-flower1 fs-3"></i>
                     <div>
                         <div class="serif fs-4 lh-1">La Flora</div><small class="opacity-75">Boutique • Est.
@@ -49,13 +50,14 @@
                             href="#" class="small link-verde fw-normal">Esqueceu a senha?</a></div>
                     <div class="input-group mb-4"><span class="input-group-text"><i class="bi bi-lock"></i></span><input
                             class="form-control" type="password" id="senha" name="senha" placeholder="••••••••"><button
-                            type="button" class="input-group-text" data-ver-senha="senha"><i
+                            type="button" class="input-group-text" data-ver-senha="senha"
+                            aria-label="Mostrar ou ocultar senha"><i
                                 class="bi bi-eye"></i></button></div>
                     <button class="btn btn-verde w-100" type="submit">Entrar na Boutique <i
                             class="bi bi-arrow-right"></i></button>
                 </form>
-                <div class="caixa-areia mt-4">Ainda não faz parte do clube? <a href="cadastro.html"
-                        class="link-verde fs-5">Cadastre-se <i class="bi bi-arrow-up-right"></i></div>
+                <div class="caixa-areia mt-4">Ainda não faz parte do clube? <a href="../cadastro/cadastro.html"
+                        class="link-verde fs-5">Cadastre-se <i class="bi bi-arrow-up-right"></i></a></div>
                 <div class="d-flex justify-content-between small text-suave mt-4"><span><i
                             class="bi bi-shield-check"></i> Ambiente Seguro</span><span>Privacidade • Termos</span>
                 </div>
@@ -63,10 +65,10 @@
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/config.js"></script>
-    <script src="../assets/js/alertas.js"></script>
-    <script src="../assets/js/api.js"></script>
-    <script src="../assets/js/login.js"></script>
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/alertas.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/login.js"></script>
 </body>
 
 </html>
