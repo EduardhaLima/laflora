@@ -4,7 +4,7 @@ function render() {
   const itens = Carrinho.ler();
   lista.innerHTML = itens.length ? itens.map((i, idx) => `<div class="item-carrinho fade-in">
     <div class="mini">${i.img ? `<img src="../../assets/img/${encodeURIComponent(i.img)}" onerror="this.remove()">` : ""}</div>
-    <div class="flex-grow-1"><div class="serif fs-5">${i.nome}</div><small class="text-suave">${i.descricao}</small></div>
+    <div class="flex-grow-1"><div class="serif fs-5">${escaparHtml(i.nome)}</div><small class="text-suave">${escaparHtml(i.descricao)}</small></div>
     ${i.cartao ? '<span class="badge rounded-pill bg-areia text-dark">Item de Ateliê</span>' :
       `<div class="qtd"><button data-menos="${idx}">−</button><span class="px-2">${i.qtd}</span><button data-mais="${idx}">+</button></div>`}
     <div class="text-end"><div class="fw-bold">${brl(i.preco * i.qtd)}</div><button class="btn btn-link btn-sm text-suave p-0" data-remover="${idx}"><i class="bi bi-trash"></i> Remover</button></div>

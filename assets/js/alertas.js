@@ -12,8 +12,9 @@ function mostrarAviso(mensagem, tipo = "sucesso") {
   const el = document.createElement("div");
   el.className = `toast align-items-center border-0 toast-${tipo}`;
   el.setAttribute("role", "alert");
-  el.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="bi ${icone} me-2"></i>${mensagem}</div>
+  el.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="bi ${icone} me-2"></i></div>
     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+  el.querySelector(".toast-body").append(document.createTextNode(mensagem));
   area.appendChild(el);
   const t = new bootstrap.Toast(el, { delay: 3500 });
   t.show();

@@ -83,11 +83,15 @@
       html += `</div>`;
     });
 
-    if (etapa === 3) {
-      const produto = PRODUTOS.find((item) => item.evento === resp.evento && item.sentimento === resp.sentimento);
+    const produto = produtosCatalogo.find((item) => item.evento === resp.evento && item.sentimento === resp.sentimento);
+    if (etapa === 3 && !produto) {
+      html += `<div class="balao mt-3">Nenhum buquê disponível para essa combinação.</div>
+        <button type="button" class="opcao" data-nova-recomendacao>Iniciar uma nova recomendação</button>`;
+    }
+    if (etapa === 3 && produto) {
       html += `<div class="recomendacao mt-3 fade-in"><span class="badge rounded-pill" style="background:var(--verde)">Recomendação ideal para você</span>
-        <div class="d-flex gap-2 bg-white rounded-3 p-2 my-2"><div class="item-carrinho p-0"><div class="mini"><img src="${caminhoImg(produto)}" alt="${produto.nome}" onerror="this.remove()"></div></div>
-        <div><div class="serif fs-5">${produto.nome}</div><small class="text-suave">${produto.descricao}</small><div class="fw-bold text-verde">${brl(produto.preco)}</div></div></div>
+        <div class="d-flex gap-2 bg-white rounded-3 p-2 my-2"><div class="item-carrinho p-0"><div class="mini"><img src="${caminhoImg(produto)}" alt="${escaparHtml(produto.nome)}" onerror="this.remove()"></div></div>
+        <div><div class="serif fs-5">${escaparHtml(produto.nome)}</div><small class="text-suave">${escaparHtml(produto.descricao)}</small><div class="fw-bold text-verde">${brl(produto.preco)}</div></div></div>
         <div class="pergunta">Você ficou satisfeito com esta recomendação?</div>`;
 
       if (!resp.satisfacao) {
@@ -120,6 +124,10 @@
     if (!botao) return;
 
     if (botao.hasAttribute("data-iniciar")) {
+      if (produtosCatalogo === null) {
+        mostrarTelaInicial("O catálogo ainda está indisponível. Tente novamente em instantes.");
+        return;
+      }
       iniciarConversa();
       return;
     }
@@ -169,7 +177,7 @@
     }
 
     if (botao.dataset.adicionar === "sim") {
-      const produto = PRODUTOS.find((item) => item.evento === resp.evento && item.sentimento === resp.sentimento);
+      const produto = produtosCatalogo.find((item) => item.evento === resp.evento && item.sentimento === resp.sentimento);
       Carrinho.adicionar(produto);
       cancelarTemporizador();
       conversaAtiva = false;

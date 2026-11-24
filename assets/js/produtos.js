@@ -1,4 +1,4 @@
-/* Catálogo de buquês disponíveis enquanto os produtos não vêm do backend PHP. */
+/* Catálogo da demo e referência para migrar IDs antigos do carrinho. */
 const PRODUTOS = [
   {
     id: "buque-1",
@@ -92,4 +92,9 @@ const PRODUTOS = [
   },
 ];
 
-const caminhoImg = (p) => "../../assets/img/" + encodeURIComponent(p.img);
+const caminhoImg = (p) => "../../assets/img/" + encodeURIComponent(p.img || "");
+
+function escaparHtml(valor) {
+  const entidades = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  return String(valor ?? "").replace(/[&<>"']/g, (caractere) => entidades[caractere]);
+}
