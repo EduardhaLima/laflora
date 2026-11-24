@@ -9,8 +9,10 @@
 .banner svg{position:absolute;opacity:.35}
 
 .produto .foto{aspect-ratio:4/5;border-radius:12px;background:var(--areia);border:2px dashed var(--borda);display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--texto-suave);position:relative;overflow:hidden;font-size:.75rem}
-.produto .foto img{width:100%;height:100%;object-fit:cover}
-.produto .add{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border-radius:50%;background:var(--verde-escuro);color:#fff;border:0}
+.produto .foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.produto .foto>i,.produto .foto>span{display:none}
+.produto .foto.sem-imagem>i,.produto .foto.sem-imagem>span{display:block}
+.produto .add{position:absolute;right:10px;bottom:10px;z-index:1;width:34px;height:34px;border-radius:50%;background:var(--verde-escuro);color:#fff;border:0}
 .produto h3{font-family:var(--serif);font-size:1.3rem;margin:0}
 .produto .preco{font-weight:700;color:var(--verde)}
 .produto small{color:var(--texto-suave);font-size:.75rem}

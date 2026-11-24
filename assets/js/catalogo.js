@@ -5,7 +5,8 @@ const titulos = { todos: "Todos os buquês", mix: "Mix de cores", individuais: "
 function cardProduto(p) {
   return `<div class="col-6 col-lg-4 col-xl-3 produto fade-in">
     <div class="foto mb-2">
-      <img src="${caminhoImg(p)}" alt="${p.nome}" onerror="this.remove()">
+      <img src="${caminhoImg(p)}" alt="${p.nome}" loading="lazy"
+        onerror="this.parentElement.classList.add('sem-imagem');this.remove()">
       <i class="bi bi-image fs-3"></i><span>Espaço p/ ${p.img}</span>
       <button class="add" data-add="${p.id}" aria-label="Adicionar ${p.nome}"><i class="bi bi-plus-lg"></i></button>
     </div>
