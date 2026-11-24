@@ -1,4 +1,4 @@
-.filtro{background:var(--areia);border-radius:var(--raio);padding:1.6rem;position:sticky;top:90px}
+.filtro{background:var(--areia);border-radius:var(--raio);padding:1.6rem}
 .filtro h2{font-family:var(--serif);font-style:italic;color:var(--verde);font-size:1.8rem;line-height:1.1}
 .filtro-item{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:.25rem 0;font-family:var(--serif);font-size:1.25rem;color:var(--texto-suave);text-align:left}
 .filtro-item.ativo{color:var(--verde)}
@@ -33,10 +33,6 @@
 .opcao-linha .opcao{justify-content:center}
 .opcao-linha .opcao.selecionada{background:var(--verde);color:#fff}
 .recomendacao{background:var(--areia);border-radius:12px;padding:.8rem}
-
-@media (max-width: 991.98px){
-  .filtro{position:static}
-}
 
 @media (max-width: 575.98px){
   .banner{min-height:170px;padding:1rem}

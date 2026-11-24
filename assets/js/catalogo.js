@@ -17,6 +17,7 @@ function renderizar(cat, busca = "") {
   grade.innerHTML = lista.length ? lista.map(cardProduto).join("") : `<p class="text-suave">Nenhum buquê encontrado.</p>`;
   document.getElementById("qtd-designs").textContent = `(${lista.length} designs)`;
   document.getElementById("titulo-modelos").textContent = titulos[cat];
+  atualizarLinkAtivo();
 }
 let catAtual = "todos";
 document.querySelectorAll(".filtro-item").forEach((b) => b.addEventListener("click", () => {
@@ -30,4 +31,17 @@ grade.addEventListener("click", (e) => {
   Carrinho.adicionar(p); mostrarAviso(`${p.nome} adicionado à sacola!`, "sucesso");
 });
 document.getElementById("btn-sair").addEventListener("click", sair);
+
+const linkCatalogo = document.querySelector('.nav-topo a[href="catalogo.html"]');
+const linkContato = document.querySelector('.nav-topo a[href="#contato"]');
+function atualizarLinkAtivo() {
+  const inicioContato = document.getElementById("contato").getBoundingClientRect().top;
+  const alturaCabecalho = document.querySelector(".topo").offsetHeight;
+  const contatoAtivo = inicioContato <= window.innerHeight + alturaCabecalho;
+  linkCatalogo.classList.toggle("ativo", !contatoAtivo);
+  linkContato.classList.toggle("ativo", contatoAtivo);
+}
+window.addEventListener("scroll", atualizarLinkAtivo, { passive: true });
+window.addEventListener("resize", atualizarLinkAtivo);
+
 renderizar("todos"); Carrinho.atualizarBadge();

@@ -44,7 +44,7 @@ body{background:var(--creme);color:var(--texto);font-family:var(--sans);font-siz
 .topo{background:var(--creme);border-bottom:1px solid var(--borda);position:sticky;top:0;z-index:20}
 .marca{font-family:var(--serif);font-size:1.45rem;color:var(--verde);text-decoration:none;font-weight:500}
 .nav-topo a{color:var(--texto);text-decoration:none;margin-right:1.4rem;padding-bottom:4px}
-.nav-topo a.ativo{border-bottom:2px solid var(--verde);font-weight:600}
+.nav-topo a.ativo{color:var(--verde);border-bottom:2px solid var(--verde);font-weight:600}
 .busca{background:var(--areia);border-radius:999px;border:0;padding:.5rem 1rem .5rem 2.2rem;width:280px}
 .busca-wrap{position:relative}
 .busca-wrap i{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--texto-suave)}
