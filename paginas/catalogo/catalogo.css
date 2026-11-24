@@ -19,11 +19,11 @@
 
 .chatbot{position:fixed;right:24px;bottom:0;width:380px;max-width:calc(100vw - 24px);background:#fff;border-radius:14px 14px 0 0;box-shadow:var(--sombra);z-index:50;display:flex;flex-direction:column;max-height:90vh;transition:all .35s ease}
 .chat-topo{background:var(--verde);color:#fff;padding:.8rem 1rem;border-radius:14px 14px 0 0;display:flex;align-items:center;gap:.7rem;cursor:pointer}
+.chatbot.bloqueado .chat-topo{cursor:default}
 .chat-topo strong{font-family:var(--serif);font-weight:500;font-size:1.05rem}
 .chat-topo small{opacity:.8;font-size:.7rem}
 .chat-corpo{overflow-y:auto;padding:1rem;display:none}
-.chatbot.aberto .chat-corpo,.chatbot.aberto .chat-rodape{display:block}
-.chat-rodape{display:none;border-top:1px solid var(--borda);padding:.6rem}
+.chatbot.aberto .chat-corpo{display:block}
 .chat-progresso{height:6px;background:var(--areia);border-radius:99px;overflow:hidden}
 .chat-progresso div{height:100%;background:var(--verde);transition:width .4s}
 .balao{background:var(--areia);border-radius:12px;padding:.8rem;font-size:.85rem}
