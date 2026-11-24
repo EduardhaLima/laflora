@@ -19,5 +19,5 @@ const Carrinho = {
   },
 };
 const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-function exigirLogin() { if (!sessionStorage.getItem("laflora_usuario")) location.href = "login.html"; }
-async function sair() { await chamarApi("logout"); sessionStorage.removeItem("laflora_usuario"); location.href = "login.html"; }
+function exigirLogin() { if (!sessionStorage.getItem("laflora_usuario")) location.href = "../login/login.html"; }
+async function sair() { await chamarApi("logout"); sessionStorage.removeItem("laflora_usuario"); location.href = "../login/login.html"; }

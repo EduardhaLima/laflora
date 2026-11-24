@@ -11,4 +11,4 @@ const PRODUTOS = [
   { id: "p8", nome: "Garden Party", descricao: "Mix Silvestre de Estação", preco: 99, categoria: "mix", img: "produto-8.jpg" },
   { id: "p9", nome: "Terracotta Hug", descricao: "Rosas Cappuccino & Folhas Secas", preco: 105, categoria: "mix", img: "produto-9.jpg" },
 ];
-const caminhoImg = (p) => "../assets/img/produtos/" + p.img;
+const caminhoImg = (p) => "../../assets/img/produtos/" + p.img;

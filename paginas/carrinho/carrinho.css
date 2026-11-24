@@ -1,0 +1,25 @@
+.etapas span{font-size:.75rem;color:var(--texto-suave)}
+.etapas .num{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--areia);margin-right:4px}
+.etapas .ativa .num{background:var(--verde);color:#fff}
+
+.qtd{display:flex;align-items:center;border:1px solid var(--borda);border-radius:999px}
+.qtd button{border:0;background:none;width:28px}
+.cartao-previa{background:#f5efe2;border-radius:12px;padding:1.2rem;font-family:var(--serif);font-style:italic;font-size:1.4rem;color:var(--verde);min-height:220px}
+
+@media (max-width: 991.98px){
+  main .position-sticky{position:static!important}
+}
+
+@media (max-width: 767.98px){
+  .etapas{flex-wrap:wrap}
+}
+
+@media (max-width: 575.98px){
+  .etapas{gap:.5rem!important}
+  .etapas span{font-size:.68rem}
+  .item-carrinho{flex-wrap:wrap;gap:.75rem}
+  .item-carrinho>.flex-grow-1{flex:1 1 calc(100% - 86px)!important;min-width:0}
+  .item-carrinho>.qtd{margin-left:86px}
+  .item-carrinho>.text-end{margin-left:auto}
+  .cartao-previa{min-height:180px;font-size:1.2rem;overflow-wrap:anywhere}
+}
