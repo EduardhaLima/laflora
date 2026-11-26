@@ -10,7 +10,7 @@ if (!is_string($dados['email'] ?? null) || !is_string($dados['senha'] ?? null)
 
 try {
     $comando = conectar()->prepare(
-        'SELECT id, nome, email, senha_hash FROM usuarios WHERE email = :email AND ativo = 1'
+        'SELECT id, nome, email, papel, senha_hash FROM usuarios WHERE email = :email AND ativo = 1'
     );
     $comando->execute(['email' => strtolower(trim($dados['email']))]);
     $usuario = $comando->fetch();

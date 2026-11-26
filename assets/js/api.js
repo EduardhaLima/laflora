@@ -1,7 +1,6 @@
 /* Comunicação com o backend PHP. Todas as respostas esperam JSON {sucesso, mensagem, ...} */
 async function chamarApi(nome, dados = null, metodo = "POST") {
-  // A persistência de pedidos será integrada em uma entrega própria.
-  if (CONFIG.MODO_DEMO || nome === "pedido") return simular(nome, dados);
+  if (CONFIG.MODO_DEMO) return simular(nome, dados);
   let url = CONFIG.API_BASE + CONFIG.ENDPOINTS[nome];
   const opcoes = { method: metodo, headers: { "Content-Type": "application/json" }, credentials: "include" };
   if (metodo === "GET" && dados) url += "?" + new URLSearchParams(dados);
@@ -10,7 +9,7 @@ async function chamarApi(nome, dados = null, metodo = "POST") {
     const r = await fetch(url, opcoes);
     const json = await r.json();
     if (!r.ok) json.sucesso = false;
-    if (nome === "produtos" && r.status === 401) {
+    if (r.status === 401 && nome !== "login" && nome !== "cadastro") {
       sessionStorage.removeItem("laflora_usuario");
       exigirLogin();
     }

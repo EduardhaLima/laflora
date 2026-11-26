@@ -37,3 +37,20 @@ const Carrinho = {
 const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 function exigirLogin() { if (!sessionStorage.getItem("laflora_usuario")) location.href = "../login/login.html"; }
 async function sair() { await chamarApi("logout"); sessionStorage.removeItem("laflora_usuario"); location.href = "../login/login.html"; }
+
+function exigirLogin() { if (!sessionStorage.getItem("laflora_usuario")) location.href = "../login/login.html"; }
+function exigirAdmin() {
+  exigirLogin();
+  const usuario = JSON.parse(sessionStorage.getItem("laflora_usuario") || "{}");
+  if (usuario.papel !== "admin") location.href = "../catalogo/catalogo.html";
+}
+function renderizarMenuAdmin() {
+  const usuario = JSON.parse(sessionStorage.getItem("laflora_usuario") || "{}");
+  const nav = document.querySelector(".nav-topo");
+  if (!nav || usuario.papel !== "admin" || nav.querySelector("[data-admin-link]")) return;
+  nav.insertAdjacentHTML("beforeend",
+    '<a href="../produtos/produtos.html" data-admin-link>Produtos</a>' +
+    '<a href="../usuarios/usuarios.html" data-admin-link>Usuários</a>'
+  );
+}
+async function sair() { await chamarApi("logout"); sessionStorage.removeItem("laflora_usuario"); location.href = "../login/login.html"; }

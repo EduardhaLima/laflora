@@ -27,10 +27,11 @@ function responder(bool $sucesso, string $mensagem, array $dados = [], int $stat
     exit;
 }
 
-function entrada(): array
+function entrada(array $metodosPermitidos = ['POST']): array
 {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('Allow: POST');
+    $metodo = $_SERVER['REQUEST_METHOD'];
+    if (!in_array($metodo, $metodosPermitidos, true)) {
+        header('Allow: ' . implode(', ', $metodosPermitidos));
         responder(false, 'Método não permitido.', [], 405);
     }
 
@@ -40,6 +41,43 @@ function entrada(): array
     }
 
     return $dados;
+}
+
+function exigirAutenticacao(): array
+{
+    $id = $_SESSION['usuario']['id'] ?? null;
+    if (!$id) {
+        responder(false, 'Faça login para continuar.', [], 401);
+    }
+
+    try {
+        $stmt = conectar()->prepare(
+            'SELECT id, nome, email, papel, ativo FROM usuarios WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+        $usuario = $stmt->fetch();
+    } catch (PDOException $erro) {
+        erroBanco($erro);
+    }
+
+    if (!$usuario || !(bool) $usuario['ativo']) {
+        $_SESSION = [];
+        session_destroy();
+        responder(false, 'Sessão inválida ou conta desativada.', [], 401);
+    }
+
+    unset($usuario['ativo']);
+    $_SESSION['usuario'] = $usuario;
+    return $usuario;
+}
+
+function exigirAdmin(): array
+{
+    $usuario = exigirAutenticacao();
+    if (($usuario['papel'] ?? '') !== 'admin') {
+        responder(false, 'Acesso restrito a administradores.', [], 403);
+    }
+    return $usuario;
 }
 
 function erroBanco(PDOException $erro): never
