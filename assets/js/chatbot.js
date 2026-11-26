@@ -12,8 +12,14 @@
   let conversaAtiva = false;
   let aguardandoReinicio = false;
   let temporizadorInatividade;
+  let numeroConsulta = 0;
+  let recomendacao = null;
+  let consultando = false;
 
   function limparRespostas() {
+    numeroConsulta++;
+    recomendacao = null;
+    consultando = false;
     Object.keys(resp).forEach((chave) => delete resp[chave]);
   }
 
@@ -66,6 +72,18 @@
     render();
   }
 
+  async function consultarRecomendacao() {
+    const numero = ++numeroConsulta;
+    consultando = true;
+    render();
+    const { evento, tamanho, sentimento } = resp;
+    const resposta = await chamarApi("chatbot", { evento, tamanho, sentimento });
+    if (numero !== numeroConsulta) return;
+    recomendacao = resposta;
+    consultando = false;
+    render();
+  }
+
   function render() {
     const etapa = PERGUNTAS.filter((q) => resp[q.chave]).length;
     let html = `<div class="d-flex align-items-center gap-2 mb-3"><div class="chat-progresso flex-grow-1"><div style="width:${(etapa / 3) * 100}%"></div></div>
@@ -83,11 +101,19 @@
       html += `</div>`;
     });
 
-    if (etapa === 3) {
-      const produto = PRODUTOS.find((item) => item.evento === resp.evento && item.sentimento === resp.sentimento);
+    const produto = recomendacao?.sucesso ? recomendacao.produto : null;
+    if (etapa === 3 && consultando) {
+      html += '<div class="balao mt-3" role="status">Buscando um buquê…</div>';
+    }
+    if (etapa === 3 && !consultando && !produto) {
+      const mensagem = recomendacao?.mensagem || "Não foi possível consultar o assistente.";
+      html += `<div class="balao mt-3">${escaparHtml(mensagem)}</div>
+        <button type="button" class="opcao" data-nova-recomendacao>Iniciar uma nova recomendação</button>`;
+    }
+    if (etapa === 3 && produto) {
       html += `<div class="recomendacao mt-3 fade-in"><span class="badge rounded-pill" style="background:var(--verde)">Recomendação ideal para você</span>
-        <div class="d-flex gap-2 bg-white rounded-3 p-2 my-2"><div class="item-carrinho p-0"><div class="mini"><img src="${caminhoImg(produto)}" alt="${produto.nome}" onerror="this.remove()"></div></div>
-        <div><div class="serif fs-5">${produto.nome}</div><small class="text-suave">${produto.descricao}</small><div class="fw-bold text-verde">${brl(produto.preco)}</div></div></div>
+        <div class="d-flex gap-2 bg-white rounded-3 p-2 my-2"><div class="item-carrinho p-0"><div class="mini"><img src="${caminhoImg(produto)}" alt="${escaparHtml(produto.nome)}" onerror="this.remove()"></div></div>
+        <div><div class="serif fs-5">${escaparHtml(produto.nome)}</div><small class="text-suave">${escaparHtml(produto.descricao)}</small><div class="fw-bold text-verde">${brl(produto.preco)}</div></div></div>
         <div class="pergunta">Você ficou satisfeito com esta recomendação?</div>`;
 
       if (!resp.satisfacao) {
@@ -132,7 +158,11 @@
       PERGUNTAS.slice(indice + 1).forEach((q) => delete resp[q.chave]);
       delete resp.satisfacao;
       resp[botao.dataset.q] = botao.dataset.v;
-      render();
+      numeroConsulta++;
+      recomendacao = null;
+      consultando = false;
+      if (PERGUNTAS.every((pergunta) => resp[pergunta.chave])) consultarRecomendacao();
+      else render();
       return;
     }
 
@@ -169,7 +199,8 @@
     }
 
     if (botao.dataset.adicionar === "sim") {
-      const produto = PRODUTOS.find((item) => item.evento === resp.evento && item.sentimento === resp.sentimento);
+      const produto = recomendacao?.produto;
+      if (!produto) return;
       Carrinho.adicionar(produto);
       cancelarTemporizador();
       conversaAtiva = false;

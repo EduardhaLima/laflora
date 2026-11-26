@@ -9,6 +9,10 @@ async function chamarApi(nome, dados = null, metodo = "POST") {
     const r = await fetch(url, opcoes);
     const json = await r.json();
     if (!r.ok) json.sucesso = false;
+    if (r.status === 401 && nome !== "login" && nome !== "cadastro") {
+      sessionStorage.removeItem("laflora_usuario");
+      exigirLogin();
+    }
     return json;
   } catch (e) {
     return { sucesso: false, mensagem: "Não foi possível conectar ao servidor." };
@@ -61,6 +65,10 @@ async function simular(nome, d) {
     contasAtuais.push({ nome: d.nome, email: d.email, sal, verificador });
     sessionStorage.setItem("laflora_contas_demo", JSON.stringify(contasAtuais));
     return { sucesso: true, mensagem: "Conta de teste criada. Faça login nesta mesma aba." };
+  }
+  if (nome === "chatbot") {
+    const produto = PRODUTOS.find((item) => item.evento === d.evento && item.sentimento === d.sentimento);
+    return { sucesso: true, produto: produto || null, mensagem: "Nenhum buquê disponível para essa combinação." };
   }
   if (nome === "pedido") return { sucesso: true, mensagem: "Pedido registrado!", pedido_id: Date.now() };
   return { sucesso: true };

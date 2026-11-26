@@ -1,0 +1,4 @@
+.table > :not(caption) > * > * {
+  background-color: transparent;
+  border-bottom-color: var(--borda);
+}

@@ -1,10 +1,11 @@
 exigirLogin();
+renderizarMenuAdmin();
 const lista = document.getElementById("lista-itens");
 function render() {
   const itens = Carrinho.ler();
   lista.innerHTML = itens.length ? itens.map((i, idx) => `<div class="item-carrinho fade-in">
     <div class="mini">${i.img ? `<img src="../../assets/img/${encodeURIComponent(i.img)}" onerror="this.remove()">` : ""}</div>
-    <div class="flex-grow-1"><div class="serif fs-5">${i.nome}</div><small class="text-suave">${i.descricao}</small></div>
+    <div class="flex-grow-1"><div class="serif fs-5">${escaparHtml(i.nome)}</div><small class="text-suave">${escaparHtml(i.descricao)}</small></div>
     ${i.cartao ? '<span class="badge rounded-pill bg-areia text-dark">Item de Ateliê</span>' :
       `<div class="qtd"><button data-menos="${idx}">−</button><span class="px-2">${i.qtd}</span><button data-mais="${idx}">+</button></div>`}
     <div class="text-end"><div class="fw-bold">${brl(i.preco * i.qtd)}</div><button class="btn btn-link btn-sm text-suave p-0" data-remover="${idx}"><i class="bi bi-trash"></i> Remover</button></div>
@@ -29,14 +30,35 @@ msg.addEventListener("input", () => {
 document.getElementById("inspiracao").addEventListener("click", () => {
   msg.value = "Para iluminar seus dias com a mesma graça que você ilumina a minha vida."; msg.dispatchEvent(new Event("input"));
 });
-document.getElementById("finalizar").addEventListener("click", async () => {
+const btnFinalizar = document.getElementById("finalizar");
+const pedidoRegistrado = document.getElementById("pedido-registrado");
+btnFinalizar.addEventListener("click", async () => {
   const itens = Carrinho.ler();
-  if (!itens.some((i) => !i.cartao)) return mostrarAviso("Adicione pelo menos um buquê antes de finalizar.", "erro");
-  const totalPedido = Carrinho.total();
-  const cartao = { para: document.getElementById("homenageado").value, mensagem: msg.value };
+  if (!itens.some((i) => !i.cartao)) {
+    return mostrarAviso("Adicione pelo menos um buquê antes de finalizar.", "erro");
+  }
 
-  const r = await chamarApi("pedido", { itens, cartao, total: totalPedido });
-  if (!r.sucesso) return mostrarAviso(r.mensagem || "Erro ao registrar o pedido.", "erro");
+  btnFinalizar.disabled = true;
+
+  const cartao = {
+    para: document.getElementById("homenageado").value.trim(),
+    mensagem: msg.value.trim(),
+  };
+
+  const payload = {
+    itens: itens.map((i) => ({ id: i.id, quantidade: i.qtd })),
+    cartao,
+  };
+
+  const r = await chamarApi("pedido", payload);
+  btnFinalizar.disabled = false;
+
+  if (!r.sucesso) {
+    return mostrarAviso(r.mensagem || "Erro ao registrar o pedido.", "erro");
+  }
+
+  const totalOficial = typeof r.total === "number" ? r.total : Carrinho.total();
+  const itensResumo = Array.isArray(r.itens) ? r.itens : itens;
 
   // Reseta o carrinho para o estado inicial e atualiza a tela
   Carrinho.limpar();
@@ -45,13 +67,23 @@ document.getElementById("finalizar").addEventListener("click", async () => {
   msg.dispatchEvent(new Event("input"));
   render();
 
-  let texto = `Olá! Gostaria de finalizar meu pedido na La Flora:%0A%0A`;
-  itens.forEach((i) => (texto += `• ${i.qtd}x ${i.nome} — ${brl(i.preco * i.qtd)}%0A`));
-  texto += `%0ATotal: ${brl(totalPedido)}`;
-  if (cartao.mensagem) texto += `%0A%0ACartão para ${cartao.para || "-"}: "${encodeURIComponent(cartao.mensagem)}"`;
+  let texto = `Olá! Gostaria de finalizar meu pedido #${r.pedido_id} na La Flora:\n\n`;
+  itensResumo.forEach((i) => {
+    const qtd = i.quantidade ?? i.qtd;
+    const subtotal = i.subtotal ?? (i.preco * qtd);
+    texto += `• ${qtd}x ${i.nome} — ${brl(subtotal)}\n`;
+  });
+  texto += `\nTotal: ${brl(totalOficial)}`;
+  if (cartao.mensagem) {
+    texto += `\n\nCartão para ${cartao.para || "-"}: "${cartao.mensagem}"`;
+  }
 
-  mostrarAviso("Pedido enviado! Abrindo o WhatsApp...", "sucesso");
-  setTimeout(() => window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${texto}`, "_blank"), 800);
+  const linkWhatsApp = document.getElementById("pedido-whatsapp");
+  linkWhatsApp.href = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(texto)}`;
+  pedidoRegistrado.hidden = false;
+  document.getElementById("pedido-confirmacao").textContent =
+    `Pedido #${r.pedido_id} registrado. Continue no WhatsApp para falar com o ateliê.`;
+  linkWhatsApp.focus();
 });
 document.getElementById("btn-sair").addEventListener("click", sair);
 render();

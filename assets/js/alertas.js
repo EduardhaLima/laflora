@@ -1,4 +1,4 @@
-/* Avisos: verde para sucesso, vermelho para erro (Bootstrap Toast) */
+/* Avisos das ações do site (Bootstrap Toast). */
 function mostrarAviso(mensagem, tipo = "sucesso") {
   let area = document.getElementById("area-avisos");
   if (!area) {
@@ -8,12 +8,19 @@ function mostrarAviso(mensagem, tipo = "sucesso") {
     area.style.zIndex = 2000;
     document.body.appendChild(area);
   }
-  const icone = tipo === "sucesso" ? "bi-check-circle-fill" : "bi-exclamation-octagon-fill";
+  const icones = {
+    sucesso: "bi-check-circle-fill",
+    desativacao: "bi-exclamation-triangle-fill",
+    exclusao: "bi-trash-fill",
+    erro: "bi-exclamation-octagon-fill",
+  };
+  const icone = icones[tipo];
   const el = document.createElement("div");
   el.className = `toast align-items-center border-0 toast-${tipo}`;
   el.setAttribute("role", "alert");
-  el.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="bi ${icone} me-2"></i>${mensagem}</div>
-    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+  el.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="bi ${icone} me-2"></i></div>
+    <button type="button" class="btn-close ${tipo === "desativacao" ? "" : "btn-close-white"} me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+  el.querySelector(".toast-body").append(document.createTextNode(mensagem));
   area.appendChild(el);
   const t = new bootstrap.Toast(el, { delay: 3500 });
   t.show();
