@@ -18,6 +18,35 @@ body{background:var(--creme);color:var(--texto);font-family:var(--sans);font-siz
 .btn-verde:hover{background:var(--verde-escuro);color:#fff}
 .btn-icone{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;color:var(--verde);position:relative}
 .btn-icone.cheio{background:var(--verde);color:#fff}
+.topo:has(.menu-conta[open]) { z-index: 60; }
+.menu-conta { position: relative; }
+.menu-conta summary { cursor: pointer; list-style: none; }
+.menu-conta summary::-webkit-details-marker { display: none; }
+.menu-conta-opcoes {
+  position: absolute;
+  inset-inline-end: 0;
+  z-index: 1;
+  min-width: max-content;
+  margin: .5rem 0 0;
+  padding: .35rem;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+.menu-conta-opcoes button {
+  display: block;
+  width: 100%;
+  padding: .5rem .75rem;
+  border: 0;
+  border-radius: .5rem;
+  background: transparent;
+  color: var(--texto);
+  text-align: start;
+  white-space: nowrap;
+}
+.menu-conta-opcoes button:hover, .menu-conta-opcoes button:focus-visible { background: var(--verde-claro); }
 .badge-carrinho{position:absolute;top:-2px;right:-4px;background:var(--verde);color:#fff;font-size:.6rem;border-radius:999px;padding:1px 5px}
 
 .form-control,.form-select{background:var(--areia);border:1px solid transparent;border-radius:10px;padding:.75rem 1rem}
@@ -81,4 +110,54 @@ body{background:var(--creme);color:var(--texto);font-family:var(--sans);font-siz
   .auth-lado .mb-5{margin-bottom:2rem!important}
   .auth-form{padding:1.5rem}
   .painel{padding:1rem}
+}
+
+@media (max-width: 767.98px) {
+  .topo .nav-topo {
+    order: 1;
+    flex: 0 0 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+  }
+  .topo .nav-topo a { margin-right: 0; }
+}
+
+.modal-conta {
+  width: min(32rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  background: var(--creme);
+  color: var(--texto);
+  box-shadow: var(--sombra);
+  overflow: auto;
+}
+.modal-conta::backdrop { background: rgba(15, 46, 32, .55); }
+.modal-conta.fechando::backdrop { animation: esmaecer-fundo-conta 160ms ease-in forwards; }
+@keyframes esmaecer-fundo-conta {
+  to { opacity: 0; }
+}
+body:has(.modal-conta[open]) { overflow: hidden; }
+.modal-conta-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--borda);
+  background: var(--creme);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.modal-conta-fechar { font-size: 1.5rem; line-height: 1; }
+.modal-conta-corpo { padding: 1.25rem 1.5rem 1.5rem; }
+.modal-conta [hidden] { display: none !important; }
+.modal-conta .form-control { background: #fff; border-color: var(--borda); }
+.modal-conta .form-control:focus { border-color: var(--verde); }
+.modal-conta-mensagem:not(:empty) { margin-top: .75rem; }
+@media (max-width: 575.98px) {
+  .modal-conta-cabecalho, .modal-conta-corpo { padding-inline: 1rem; }
 }

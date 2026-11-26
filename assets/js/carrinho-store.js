@@ -36,11 +36,8 @@ const Carrinho = {
 };
 const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 function exigirLogin() { if (!sessionStorage.getItem("laflora_usuario")) location.href = "../login/login.html"; }
-async function sair() { await chamarApi("logout"); sessionStorage.removeItem("laflora_usuario"); location.href = "../login/login.html"; }
-
-function exigirLogin() { if (!sessionStorage.getItem("laflora_usuario")) location.href = "../login/login.html"; }
 function exigirAdmin() {
-  exigirLogin();
+  if (!sessionStorage.getItem("laflora_usuario")) return exigirLogin();
   const usuario = JSON.parse(sessionStorage.getItem("laflora_usuario") || "{}");
   if (usuario.papel !== "admin") location.href = "../catalogo/catalogo.html";
 }

@@ -37,9 +37,9 @@ if (mb_strlen($cartaoMensagem) > 240) {
     responder(false, 'A mensagem do cartão deve ter no máximo 240 caracteres.', [], 422);
 }
 
-$pdo = conectar();
-
+$pdo = null;
 try {
+    $pdo = conectar();
     $ids = array_keys($quantidadesPorId);
     $placeholders = implode(', ', array_fill(0, count($ids), '?'));
 
@@ -126,7 +126,7 @@ try {
         'itens' => $itensCalculados,
     ], 201);
 } catch (PDOException $erro) {
-    if ($pdo->inTransaction()) {
+    if ($pdo?->inTransaction()) {
         $pdo->rollBack();
     }
     erroBanco($erro);

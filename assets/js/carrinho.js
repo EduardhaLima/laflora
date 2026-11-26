@@ -1,4 +1,5 @@
 exigirLogin();
+renderizarMenuAdmin();
 const lista = document.getElementById("lista-itens");
 function render() {
   const itens = Carrinho.ler();
@@ -29,13 +30,14 @@ msg.addEventListener("input", () => {
 document.getElementById("inspiracao").addEventListener("click", () => {
   msg.value = "Para iluminar seus dias com a mesma graça que você ilumina a minha vida."; msg.dispatchEvent(new Event("input"));
 });
-document.getElementById("finalizar").addEventListener("click", async () => {
+const btnFinalizar = document.getElementById("finalizar");
+const pedidoRegistrado = document.getElementById("pedido-registrado");
+btnFinalizar.addEventListener("click", async () => {
   const itens = Carrinho.ler();
   if (!itens.some((i) => !i.cartao)) {
     return mostrarAviso("Adicione pelo menos um buquê antes de finalizar.", "erro");
   }
 
-  const btnFinalizar = document.getElementById("finalizar");
   btnFinalizar.disabled = true;
 
   const cartao = {
@@ -76,11 +78,12 @@ document.getElementById("finalizar").addEventListener("click", async () => {
     texto += `\n\nCartão para ${cartao.para || "-"}: "${cartao.mensagem}"`;
   }
 
-  mostrarAviso("Pedido enviado! Abrindo o WhatsApp...", "sucesso");
-  setTimeout(
-    () => window.open(`https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(texto)}`, "_blank", "noopener,noreferrer"),
-    800
-  );
+  const linkWhatsApp = document.getElementById("pedido-whatsapp");
+  linkWhatsApp.href = `https://wa.me/${CONFIG.WHATSAPP}?text=${encodeURIComponent(texto)}`;
+  pedidoRegistrado.hidden = false;
+  document.getElementById("pedido-confirmacao").textContent =
+    `Pedido #${r.pedido_id} registrado. Continue no WhatsApp para falar com o ateliê.`;
+  linkWhatsApp.focus();
 });
 document.getElementById("btn-sair").addEventListener("click", sair);
 render();

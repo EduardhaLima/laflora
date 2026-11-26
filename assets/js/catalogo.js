@@ -1,4 +1,5 @@
 exigirLogin();
+renderizarMenuAdmin();
 let produtosCatalogo = null;
 const grade = document.getElementById("grade-produtos");
 const titulos = { todos: "Todos os buquês", mix: "Mix de cores", individuais: "Cores individuais" };

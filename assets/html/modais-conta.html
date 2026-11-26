@@ -1,0 +1,54 @@
+<dialog class="modal-conta" id="modal-perfil" aria-labelledby="titulo-perfil">
+  <header class="modal-conta-cabecalho">
+    <h2 class="serif mb-0" id="titulo-perfil">Editar perfil</h2>
+    <form method="dialog">
+      <button type="submit" class="btn-icone modal-conta-fechar" aria-label="Fechar" autofocus>×</button>
+    </form>
+  </header>
+  <div class="modal-conta-corpo">
+    <p id="estado-perfil" class="small" role="status"></p>
+    <form id="form-perfil" class="d-grid gap-3" hidden>
+      <div><label class="form-label" for="perfil-nome">Nome</label>
+        <input class="form-control" id="perfil-nome" name="nome" maxlength="120" autocomplete="name" required></div>
+      <div><label class="form-label" for="perfil-email">E-mail</label>
+        <input class="form-control" id="perfil-email" name="email" type="email" maxlength="254" autocomplete="email" required></div>
+      <div><label class="form-label" for="perfil-telefone">Telefone</label>
+        <input class="form-control" id="perfil-telefone" name="telefone" type="tel" maxlength="20" autocomplete="tel" required></div>
+      <button type="submit" class="btn btn-verde">Salvar perfil</button>
+    </form>
+
+    <p class="modal-conta-mensagem small mb-0" role="status"></p>
+  </div>
+</dialog>
+
+<dialog class="modal-conta" id="modal-configuracoes" aria-labelledby="titulo-configuracoes">
+  <header class="modal-conta-cabecalho">
+    <h2 class="serif mb-0" id="titulo-configuracoes">Configurações da conta</h2>
+    <form method="dialog">
+      <button type="submit" class="btn-icone modal-conta-fechar" aria-label="Fechar" autofocus>×</button>
+    </form>
+  </header>
+  <div class="modal-conta-corpo">
+    <h3 class="serif fs-4">Alterar senha</h3>
+    <form id="form-senha" class="d-grid gap-3">
+      <div><label class="form-label" for="senha-atual">Senha atual</label>
+        <input class="form-control" id="senha-atual" name="senha_atual" type="password" autocomplete="current-password" required></div>
+      <div><label class="form-label" for="senha-nova">Nova senha</label>
+        <input class="form-control" id="senha-nova" name="senha_nova" type="password" autocomplete="new-password" minlength="8" required></div>
+      <div><label class="form-label" for="senha-confirmacao">Confirmar nova senha</label>
+        <input class="form-control" id="senha-confirmacao" name="confirmacao" type="password" autocomplete="new-password" minlength="8" required></div>
+      <button type="submit" class="btn btn-verde">Alterar senha</button>
+    </form>
+    <details id="desativar-conta" class="border-top mt-4 pt-3" hidden>
+      <summary class="text-danger fw-semibold">Desativar conta</summary>
+      <p class="small mt-2">Você perderá o acesso à conta. Os pedidos já registrados serão preservados.</p>
+      <form id="form-desativar" class="d-grid gap-3">
+        <div><label class="form-label" for="senha-desativar">Senha atual</label>
+          <input class="form-control" id="senha-desativar" name="senha_atual" type="password" autocomplete="current-password" required></div>
+        <button type="submit" class="btn btn-outline-danger rounded-pill">Confirmar desativação</button>
+      </form>
+    </details>
+
+    <p class="modal-conta-mensagem small mb-0" role="status"></p>
+  </div>
+</dialog>
