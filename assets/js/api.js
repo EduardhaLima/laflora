@@ -66,6 +66,10 @@ async function simular(nome, d) {
     sessionStorage.setItem("laflora_contas_demo", JSON.stringify(contasAtuais));
     return { sucesso: true, mensagem: "Conta de teste criada. Faça login nesta mesma aba." };
   }
+  if (nome === "chatbot") {
+    const produto = PRODUTOS.find((item) => item.evento === d.evento && item.sentimento === d.sentimento);
+    return { sucesso: true, produto: produto || null, mensagem: "Nenhum buquê disponível para essa combinação." };
+  }
   if (nome === "pedido") return { sucesso: true, mensagem: "Pedido registrado!", pedido_id: Date.now() };
   return { sucesso: true };
 }

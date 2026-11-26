@@ -1,6 +1,8 @@
 (() => {
   const menu = document.querySelector(".menu-conta");
   const conta = JSON.parse(sessionStorage.getItem("laflora_usuario") || "{}");
+  if (!menu || conta.papel === "admin") return;
+  menu.hidden = false;
   let carregandoModais;
 
   function informar(modal, mensagem, sucesso = false) {
@@ -37,7 +39,7 @@
     informar(modal, "");
     const resposta = await chamarApi("perfil", dados, metodo);
     botao.disabled = false;
-    informar(modal, resposta.mensagem || "Não foi possível salvar.", resposta.sucesso);
+    informar(modal, resposta.mensagem || "Não foi possível salvar.", resposta.sucesso && metodo !== "DELETE");
     return resposta;
   }
 
@@ -78,15 +80,15 @@
   }
 
   async function prepararModais() {
-    const resposta = await fetch("../../assets/html/modais-conta.html?v=modal-conta-1");
+    const resposta = await fetch("../../assets/html/modais-conta.html?v=exclusao-1");
     if (!resposta.ok) throw new Error("Falha ao carregar os modais de conta.");
     document.body.insertAdjacentHTML("beforeend", await resposta.text());
 
     const formPerfil = document.getElementById("form-perfil");
     const formSenha = document.getElementById("form-senha");
-    const formDesativar = document.getElementById("form-desativar");
-    const desativarConta = document.getElementById("desativar-conta");
-    desativarConta.hidden = conta.papel !== "cliente";
+    const formExcluir = document.getElementById("form-excluir");
+    const excluirConta = document.getElementById("excluir-conta");
+    excluirConta.hidden = conta.papel !== "cliente";
 
     formPerfil.addEventListener("submit", async (evento) => {
       evento.preventDefault();
@@ -108,11 +110,12 @@
       if (resposta.sucesso) formSenha.reset();
     });
 
-    formDesativar.addEventListener("submit", async (evento) => {
+    formExcluir.addEventListener("submit", async (evento) => {
       evento.preventDefault();
-      if (!window.confirm("Deseja desativar sua conta e sair do site?")) return;
-      const resposta = await salvarConta(formDesativar, "DELETE", Object.fromEntries(new FormData(formDesativar)));
+      if (!window.confirm("Excluir sua conta definitivamente? Esta ação não pode ser desfeita.")) return;
+      const resposta = await salvarConta(formExcluir, "DELETE", Object.fromEntries(new FormData(formExcluir)));
       if (resposta.sucesso) {
+        sessionStorage.setItem("laflora_conta_excluida", "1");
         sessionStorage.removeItem("laflora_usuario");
         location.href = "../login/login.html";
       }
@@ -124,8 +127,8 @@
         informar(modal, "");
         if (modal.id === "modal-configuracoes") {
           formSenha.reset();
-          formDesativar.reset();
-          desativarConta.open = false;
+          formExcluir.reset();
+          excluirConta.open = false;
         }
         menu.querySelector("summary").focus({ preventScroll: true });
       });

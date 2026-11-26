@@ -90,7 +90,8 @@ body{background:var(--creme);color:var(--texto);font-family:var(--sans);font-siz
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 .toast-sucesso{background:var(--sucesso);color:#fff}
-.toast-erro{background:var(--erro);color:#fff}
+.toast-desativacao{background:#ffc107;color:#332600}
+.toast-exclusao,.toast-erro{background:var(--erro);color:#fff}
 
 @media (max-width: 991.98px){
   .auth-wrap{align-items:flex-start;padding:1.5rem 1rem}

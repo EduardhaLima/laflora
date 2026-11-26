@@ -1,3 +1,8 @@
+if (sessionStorage.getItem("laflora_conta_excluida")) {
+  sessionStorage.removeItem("laflora_conta_excluida");
+  mostrarAviso("Conta excluída definitivamente.", "exclusao");
+}
+
 document.getElementById("form-login").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = e.target.email.value.trim(), senha = e.target.senha.value;

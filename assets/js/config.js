@@ -10,6 +10,7 @@ const CONFIG = {
     login: "/login.php",       // POST {email, senha} -> {sucesso, mensagem, usuario}
     cadastro: "/cadastro.php", // POST {nome,email,telefone,senha,nascimento} -> {sucesso, mensagem}
     produtos: "/produtos.php", // GET / POST / PUT / DELETE
+    chatbot: "/chatbot.php",   // POST {evento, tamanho, sentimento} -> {sucesso, mensagem, produto}
     pedido: "/pedido.php",     // POST {itens, cartao} -> {sucesso, mensagem, pedido_id, total, itens}
     usuarios: "/usuarios.php", // GET / PUT / DELETE (admin)
     perfil: "/perfil.php",     // GET / PUT / DELETE da própria conta

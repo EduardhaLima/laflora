@@ -12,8 +12,14 @@
   let conversaAtiva = false;
   let aguardandoReinicio = false;
   let temporizadorInatividade;
+  let numeroConsulta = 0;
+  let recomendacao = null;
+  let consultando = false;
 
   function limparRespostas() {
+    numeroConsulta++;
+    recomendacao = null;
+    consultando = false;
     Object.keys(resp).forEach((chave) => delete resp[chave]);
   }
 
@@ -66,6 +72,18 @@
     render();
   }
 
+  async function consultarRecomendacao() {
+    const numero = ++numeroConsulta;
+    consultando = true;
+    render();
+    const { evento, tamanho, sentimento } = resp;
+    const resposta = await chamarApi("chatbot", { evento, tamanho, sentimento });
+    if (numero !== numeroConsulta) return;
+    recomendacao = resposta;
+    consultando = false;
+    render();
+  }
+
   function render() {
     const etapa = PERGUNTAS.filter((q) => resp[q.chave]).length;
     let html = `<div class="d-flex align-items-center gap-2 mb-3"><div class="chat-progresso flex-grow-1"><div style="width:${(etapa / 3) * 100}%"></div></div>
@@ -83,9 +101,13 @@
       html += `</div>`;
     });
 
-    const produto = produtosCatalogo.find((item) => item.evento === resp.evento && item.sentimento === resp.sentimento);
-    if (etapa === 3 && !produto) {
-      html += `<div class="balao mt-3">Nenhum buquê disponível para essa combinação.</div>
+    const produto = recomendacao?.sucesso ? recomendacao.produto : null;
+    if (etapa === 3 && consultando) {
+      html += '<div class="balao mt-3" role="status">Buscando um buquê…</div>';
+    }
+    if (etapa === 3 && !consultando && !produto) {
+      const mensagem = recomendacao?.mensagem || "Não foi possível consultar o assistente.";
+      html += `<div class="balao mt-3">${escaparHtml(mensagem)}</div>
         <button type="button" class="opcao" data-nova-recomendacao>Iniciar uma nova recomendação</button>`;
     }
     if (etapa === 3 && produto) {
@@ -124,10 +146,6 @@
     if (!botao) return;
 
     if (botao.hasAttribute("data-iniciar")) {
-      if (produtosCatalogo === null) {
-        mostrarTelaInicial("O catálogo ainda está indisponível. Tente novamente em instantes.");
-        return;
-      }
       iniciarConversa();
       return;
     }
@@ -140,7 +158,11 @@
       PERGUNTAS.slice(indice + 1).forEach((q) => delete resp[q.chave]);
       delete resp.satisfacao;
       resp[botao.dataset.q] = botao.dataset.v;
-      render();
+      numeroConsulta++;
+      recomendacao = null;
+      consultando = false;
+      if (PERGUNTAS.every((pergunta) => resp[pergunta.chave])) consultarRecomendacao();
+      else render();
       return;
     }
 
@@ -177,7 +199,8 @@
     }
 
     if (botao.dataset.adicionar === "sim") {
-      const produto = produtosCatalogo.find((item) => item.evento === resp.evento && item.sentimento === resp.sentimento);
+      const produto = recomendacao?.produto;
+      if (!produto) return;
       Carrinho.adicionar(produto);
       cancelarTemporizador();
       conversaAtiva = false;

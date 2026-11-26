@@ -8,16 +8,20 @@ $pdo = conectar();
 
 if ($metodo === 'GET') {
     try {
-        $busca = trim((string) ($_GET['busca'] ?? ''));
+        $busca = $_GET['busca'] ?? '';
+        if (!is_string($busca)) {
+            responder(false, 'Informe um termo de busca válido.', [], 422);
+        }
+        $busca = trim($busca);
         if ($busca !== '') {
             $termo = '%' . $busca . '%';
             $stmt = $pdo->prepare(
                 'SELECT id, nome, email, telefone, nascimento, papel, ativo, criado_em
                  FROM usuarios
-                 WHERE nome LIKE :nome OR email LIKE :email
+                 WHERE nome LIKE :nome OR email LIKE :email OR CAST(id AS CHAR) = :id
                  ORDER BY id DESC'
             );
-            $stmt->execute(['nome' => $termo, 'email' => $termo]);
+            $stmt->execute(['nome' => $termo, 'email' => $termo, 'id' => ltrim($busca, '#')]);
             $usuarios = $stmt->fetchAll();
         } else {
             $usuarios = $pdo->query(
@@ -58,7 +62,6 @@ if ($metodo === 'PUT') {
     $telefone = preg_replace('/\D+/', '', $dados['telefone']);
     $nascimento = trim($dados['nascimento']);
     $papel = trim($dados['papel']);
-    $ativo = isset($dados['ativo']) ? (bool) $dados['ativo'] : true;
     $novaSenha = isset($dados['senha']) && is_string($dados['senha']) ? $dados['senha'] : '';
 
     if ($nome === '' || mb_strlen($nome) > 120 || strlen($email) > 254 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -75,8 +78,8 @@ if ($metodo === 'PUT') {
     if (!in_array($papel, ['cliente', 'admin'], true)) {
         responder(false, 'Papel inválido.', [], 422);
     }
-    if ($id === (int) $admin['id'] && (!$ativo || $papel !== 'admin')) {
-        responder(false, 'Você não pode desativar ou remover seu próprio acesso de administrador.', [], 422);
+    if ($id === (int) $admin['id'] && $papel !== 'admin') {
+        responder(false, 'Você não pode remover seu próprio acesso de administrador.', [], 422);
     }
     if ($novaSenha !== '' && (mb_strlen($novaSenha) < 8 || strlen($novaSenha) > 72 || str_contains($novaSenha, "\0"))) {
         responder(false, 'A nova senha deve ter entre 8 caracteres e 72 bytes.', [], 422);
@@ -89,7 +92,6 @@ if ($metodo === 'PUT') {
             'telefone = :telefone',
             'nascimento = :nascimento',
             'papel = :papel',
-            'ativo = :ativo',
         ];
         $params = [
             'id' => $id,
@@ -98,7 +100,6 @@ if ($metodo === 'PUT') {
             'telefone' => $telefone,
             'nascimento' => $nascimento,
             'papel' => $papel,
-            'ativo' => $ativo ? 1 : 0,
         ];
 
         if ($novaSenha !== '') {
@@ -134,21 +135,20 @@ if ($metodo === 'DELETE') {
         responder(false, 'ID de usuário inválido.', [], 422);
     }
     if ($id === (int) $admin['id']) {
-        responder(false, 'Você não pode desativar a própria conta.', [], 422);
+        responder(false, 'Você não pode excluir a própria conta.', [], 422);
     }
 
     try {
-        $stmt = $pdo->prepare('UPDATE usuarios SET ativo = 0 WHERE id = :id');
+        $stmt = $pdo->prepare('DELETE FROM usuarios WHERE id = :id');
         $stmt->execute(['id' => $id]);
         if ($stmt->rowCount() === 0) {
-            $existe = $pdo->prepare('SELECT 1 FROM usuarios WHERE id = :id');
-            $existe->execute(['id' => $id]);
-            if (!$existe->fetchColumn()) {
-                responder(false, 'Usuário não encontrado.', [], 404);
-            }
+            responder(false, 'Usuário não encontrado.', [], 404);
         }
-        responder(true, 'Usuário desativado com sucesso.');
+        responder(true, 'Usuário excluído com sucesso.');
     } catch (PDOException $erro) {
+        if (($erro->errorInfo[1] ?? null) === 1451) {
+            responder(false, 'Esta conta tem pedidos vinculados e não pode ser excluída.', [], 409);
+        }
         erroBanco($erro);
     }
 }

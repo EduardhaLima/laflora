@@ -2,3 +2,15 @@
   background-color: transparent;
   border-bottom-color: var(--borda);
 }
+
+.btn-outline-laranja {
+  --bs-btn-color: #a84309;
+  --bs-btn-border-color: #b94c0b;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #a84309;
+  --bs-btn-hover-border-color: #a84309;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #873506;
+  --bs-btn-active-border-color: #873506;
+  --bs-btn-focus-shadow-rgb: 185, 76, 11;
+}

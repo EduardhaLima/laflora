@@ -2,6 +2,7 @@ exigirAdmin();
 Carrinho.atualizarBadge();
 document.getElementById("btn-sair").addEventListener("click", sair);
 
+const campoBusca = document.getElementById("busca-usuarios");
 const tbody = document.getElementById("tabela-usuarios");
 const modalEl = document.getElementById("modal-usuario");
 const modal = new bootstrap.Modal(modalEl);
@@ -25,17 +26,19 @@ function renderizarUsuarios(lista) {
         <button class="btn btn-sm btn-outline-success me-1" data-editar="${u.id}">
           <i class="bi bi-pencil"></i> Editar
         </button>
-        ${u.ativo ? `<button class="btn btn-sm btn-outline-danger" data-desativar="${u.id}">
-          <i class="bi bi-person-slash"></i> Desativar
-        </button>` : ""}
+        <button class="btn btn-sm btn-outline-danger" data-excluir="${u.id}">
+          <i class="bi bi-trash"></i> Excluir
+        </button>
       </td>
     </tr>
   `).join("");
 }
 
-async function carregarUsuarios(busca = "") {
+async function carregarUsuarios() {
+  const busca = campoBusca.value.trim();
   const params = busca ? { busca } : null;
   const r = await chamarApi("usuarios", params, "GET");
+  if (busca !== campoBusca.value.trim()) return;
   if (!r.sucesso || !Array.isArray(r.usuarios)) {
     tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">${escaparHtml(r.mensagem || "Erro ao carregar usuários.")}</td></tr>`;
     return;
@@ -45,9 +48,9 @@ async function carregarUsuarios(busca = "") {
 }
 
 let timerBusca;
-document.getElementById("busca-usuarios").addEventListener("input", (e) => {
+campoBusca.addEventListener("input", () => {
   clearTimeout(timerBusca);
-  timerBusca = setTimeout(() => carregarUsuarios(e.target.value.trim()), 250);
+  timerBusca = setTimeout(carregarUsuarios, 250);
 });
 
 tbody.addEventListener("click", async (e) => {
@@ -61,22 +64,21 @@ tbody.addEventListener("click", async (e) => {
     document.getElementById("usr-telefone").value = u.telefone;
     document.getElementById("usr-nascimento").value = u.nascimento;
     document.getElementById("usr-papel").value = u.papel;
-    document.getElementById("usr-ativo").checked = Boolean(u.ativo);
     document.getElementById("usr-senha").value = "";
     modal.show();
     return;
   }
 
-  const btnDesativar = e.target.closest("[data-desativar]");
-  if (btnDesativar) {
-    const id = Number(btnDesativar.dataset.desativar);
-    if (!confirm("Deseja realmente desativar este usuário?")) return;
+  const btnExcluir = e.target.closest("[data-excluir]");
+  if (btnExcluir) {
+    const id = Number(btnExcluir.dataset.excluir);
+    if (!confirm("Excluir este usuário definitivamente? Esta ação não pode ser desfeita.")) return;
     const r = await chamarApi("usuarios", { id }, "DELETE");
     if (r.sucesso) {
-      mostrarAviso(r.mensagem || "Usuário desativado.", "sucesso");
-      carregarUsuarios(document.getElementById("busca-usuarios").value.trim());
+      mostrarAviso(r.mensagem || "Usuário excluído.", "exclusao");
+      carregarUsuarios();
     } else {
-      mostrarAviso(r.mensagem || "Erro ao desativar usuário.", "erro");
+      mostrarAviso(r.mensagem || "Erro ao excluir usuário.", "erro");
     }
   }
 });
@@ -90,7 +92,6 @@ document.getElementById("form-usuario").addEventListener("submit", async (e) => 
     telefone: document.getElementById("usr-telefone").value.replace(/\D/g, ""),
     nascimento: document.getElementById("usr-nascimento").value,
     papel: document.getElementById("usr-papel").value,
-    ativo: document.getElementById("usr-ativo").checked,
   };
   const senha = document.getElementById("usr-senha").value;
   if (senha) payload.senha = senha;
@@ -99,7 +100,7 @@ document.getElementById("form-usuario").addEventListener("submit", async (e) => 
   if (r.sucesso) {
     mostrarAviso(r.mensagem || "Usuário atualizado.", "sucesso");
     modal.hide();
-    carregarUsuarios(document.getElementById("busca-usuarios").value.trim());
+    carregarUsuarios();
   } else {
     mostrarAviso(r.mensagem || "Erro ao atualizar usuário.", "erro");
   }

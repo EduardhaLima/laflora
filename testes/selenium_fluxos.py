@@ -98,6 +98,17 @@ class FluxosLaFlora(unittest.TestCase):
         self.assertEqual(total.replace("\xa0", " "), "R$ 104,00")
         self.assertIn("registrado", self.visivel("#pedido-confirmacao").text)
 
+        self.clicar('[aria-label="Minha conta"]')
+        self.clicar('[data-modal-conta="configuracoes"]')
+        self.clicar("#excluir-conta summary")
+        self.preencher("#senha-excluir", self.senha)
+        self.clicar("#form-excluir button[type=submit]")
+        self.wait.until(EC.alert_is_present()).accept()
+        self.wait.until(EC.text_to_be_present_in_element(
+            (By.CSS_SELECTOR, "#modal-configuracoes .modal-conta-mensagem"),
+            "pedidos vinculados",
+        ))
+
         self.abrir("produtos")
         self.wait.until(EC.url_contains("/catalogo/catalogo.html"))
         status = self.driver.execute_async_script("""
@@ -106,7 +117,7 @@ class FluxosLaFlora(unittest.TestCase):
         """)
         self.assertEqual(status, 403)
 
-    def test_cliente_edita_perfil_troca_senha_e_desativa_conta(self):
+    def test_cliente_edita_perfil_troca_senha_e_exclui_conta(self):
         email = self.cadastrar()
         self.entrar(email, self.senha)
         menu = self.visivel('summary[aria-label="Minha conta"]')
@@ -154,11 +165,12 @@ class FluxosLaFlora(unittest.TestCase):
         self.entrar(novo_email, senha_nova)
         self.clicar('[aria-label="Minha conta"]')
         self.clicar('[data-modal-conta="configuracoes"]')
-        self.clicar("#desativar-conta summary")
-        self.preencher("#senha-desativar", senha_nova)
-        self.clicar("#form-desativar button[type=submit]")
+        self.clicar("#excluir-conta summary")
+        self.preencher("#senha-excluir", senha_nova)
+        self.clicar("#form-excluir button[type=submit]")
         self.wait.until(EC.alert_is_present()).accept()
         self.wait.until(EC.url_contains("/login/login.html"))
+        self.visivel(".toast-exclusao")
         self.preencher("#email", novo_email)
         self.preencher("#senha", senha_nova)
         self.clicar("#form-login button[type=submit]")
@@ -169,36 +181,64 @@ class FluxosLaFlora(unittest.TestCase):
         senha_admin = os.environ["LAFLORA_TEST_ADMIN_PASSWORD"]
         email = self.cadastrar()
         self.entrar(admin, senha_admin)
+        self.assertFalse(self.driver.find_element(By.CSS_SELECTOR, ".menu-conta").is_displayed())
         self.clicar('[data-admin-link][href*="/produtos/"]')
+        self.visivel("#btn-novo-produto")
+        self.assertFalse(self.driver.find_element(By.CSS_SELECTOR, ".menu-conta").is_displayed())
 
-        produto = f"teste-{secrets.token_hex(6)}"
+        nome_produto = f"Buquê de teste {secrets.token_hex(6)}"
         self.clicar("#btn-novo-produto")
-        for campo, valor in {"id": produto, "nome": "Buquê de teste", "descricao": "Teste Selenium", "preco": "12.50"}.items():
+        self.visivel("#prod-nome")
+        self.assertFalse(self.driver.find_element(By.ID, "prod-id").is_displayed())
+        for campo, valor in {"nome": nome_produto, "descricao": "Teste Selenium", "preco": "12.50"}.items():
             self.preencher(f"#prod-{campo}", valor)
         Select(self.visivel("#prod-categoria")).select_by_value("mix")
         self.clicar("#form-produto button[type=submit]")
         self.wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, "#modal-produto")))
+        self.visivel(".toast-sucesso")
+        self.preencher("#busca-produtos", nome_produto)
+        linha_produto = f'//tr[td[normalize-space()="{nome_produto}"]]'
+        produto = self.wait.until(EC.visibility_of_element_located((By.XPATH, f"{linha_produto}/td/code"))).text
+        self.assertRegex(produto, r"^prod-[0-9a-f]{32}$")
+        self.preencher("#busca-produtos", produto)
+        self.wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '[data-editar="buque-1"]')))
         self.clicar(f'[data-editar="{produto}"]')
+        self.assertTrue(self.visivel("#prod-id").get_property("readOnly"))
         self.preencher("#prod-nome", "Buquê revisado")
         self.clicar("#form-produto button[type=submit]")
         self.wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, "#modal-produto")))
         self.wait.until(EC.text_to_be_present_in_element((By.ID, "tabela-produtos"), "Buquê revisado"))
+        self.preencher("#busca-produtos", "Buquê revisado")
         self.clicar(f'[data-desativar="{produto}"]')
         self.wait.until(EC.alert_is_present()).accept()
         self.wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, f'[data-desativar="{produto}"]')))
+        self.visivel(".toast-desativacao")
+        botao_excluir = f'[data-excluir="{produto}"]'
+        self.clicar(botao_excluir)
+        self.assertIn("banco de dados", self.visivel("#modal-excluir-produto .modal-body").text)
+        self.clicar("#modal-excluir-produto .modal-footer [data-bs-dismiss]")
+        self.wait.until(EC.invisibility_of_element_located((By.ID, "modal-excluir-produto")))
+        self.visivel(botao_excluir)
+        self.clicar(botao_excluir)
+        self.clicar("#confirmar-exclusao-produto")
+        self.wait.until_not(EC.presence_of_element_located((By.CSS_SELECTOR, botao_excluir)))
+        self.visivel(".toast-exclusao")
 
         self.clicar('.nav-topo a[href*="/usuarios/"]')
         self.preencher("#busca-usuarios", email)
         self.wait.until(EC.text_to_be_present_in_element((By.ID, "tabela-usuarios"), email))
         linha = f'//tr[td[normalize-space()="{email}"]]'
+        id_usuario = self.driver.find_element(By.XPATH, f"{linha}/td[1]").text
+        self.preencher("#busca-usuarios", id_usuario)
+        self.wait.until(EC.text_to_be_present_in_element((By.XPATH, linha), email))
         self.driver.find_element(By.XPATH, f"{linha}//button[@data-editar]").send_keys(Keys.ENTER)
         self.preencher("#usr-nome", "Cliente revisado")
         self.clicar("#form-usuario button[type=submit]")
         self.wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, "#modal-usuario")))
         self.wait.until(EC.text_to_be_present_in_element((By.XPATH, linha), "Cliente revisado"))
-        self.driver.find_element(By.XPATH, f"{linha}//button[@data-desativar]").send_keys(Keys.ENTER)
+        self.driver.find_element(By.XPATH, f"{linha}//button[@data-excluir]").send_keys(Keys.ENTER)
         self.wait.until(EC.alert_is_present()).accept()
-        self.wait.until(EC.text_to_be_present_in_element((By.XPATH, linha), "Inativo"))
+        self.wait.until_not(EC.presence_of_element_located((By.XPATH, linha)))
 
 
 if __name__ == "__main__":

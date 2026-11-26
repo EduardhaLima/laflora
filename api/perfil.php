@@ -53,7 +53,7 @@ try {
         responder(false, 'Ação inválida.', [], 422);
     }
     if ($metodo === 'DELETE' && $usuario['papel'] === 'admin') {
-        responder(false, 'Peça a outro administrador para desativar esta conta.', [], 403);
+        responder(false, 'Peça a outro administrador para excluir esta conta.', [], 403);
     }
 
     $senhaAtual = $dados['senha_atual'] ?? null;
@@ -67,7 +67,7 @@ try {
     $params = ['id' => $id, 'hash_atual' => $hash];
     if ($metodo === 'DELETE') {
         $stmt = $pdo->prepare(
-            "UPDATE usuarios SET ativo = 0 WHERE id = :id AND ativo = 1 AND papel = 'cliente' AND senha_hash = :hash_atual"
+            "DELETE FROM usuarios WHERE id = :id AND ativo = 1 AND papel = 'cliente' AND senha_hash = :hash_atual"
         );
     } else {
         $senhaNova = $dados['senha_nova'] ?? null;
@@ -87,11 +87,14 @@ try {
     if ($metodo === 'DELETE') {
         $_SESSION = [];
         session_destroy();
-        responder(true, 'Conta desativada.');
+        responder(true, 'Conta excluída.');
     }
     session_regenerate_id(true);
     responder(true, 'Senha alterada.');
 } catch (PDOException $erro) {
+    if ($metodo === 'DELETE' && ($erro->errorInfo[1] ?? null) === 1451) {
+        responder(false, 'Esta conta tem pedidos vinculados e não pode ser excluída.', [], 409);
+    }
     if (($erro->errorInfo[1] ?? null) === 1062) {
         responder(false, 'Este e-mail já está em uso.', [], 409);
     }

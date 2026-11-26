@@ -7,7 +7,7 @@ $pdo = conectar();
 
 function validarProduto(array $dados, bool $criacao): array
 {
-    $id = trim((string) ($dados['id'] ?? ''));
+    $id = is_string($dados['id'] ?? null) ? trim($dados['id']) : '';
     $nome = trim((string) ($dados['nome'] ?? ''));
     $descricao = trim((string) ($dados['descricao'] ?? ''));
     $categoria = trim((string) ($dados['categoria'] ?? ''));
@@ -16,8 +16,8 @@ function validarProduto(array $dados, bool $criacao): array
     $img = trim((string) ($dados['img'] ?? ''));
     $ativo = isset($dados['ativo']) ? (bool) $dados['ativo'] : true;
 
-    if ($id === '' || strlen($id) > 40 || ($criacao && !preg_match('/^[a-z0-9-]+$/', $id))) {
-        responder(false, 'Informe um ID válido (apenas letras minúsculas, números e hífen, até 40 caracteres).', [], 422);
+    if (!$criacao && ($id === '' || strlen($id) > 40)) {
+        responder(false, 'ID do produto inválido.', [], 422);
     }
     if ($nome === '' || mb_strlen($nome) > 120) {
         responder(false, 'Informe o nome do produto (até 120 caracteres).', [], 422);
@@ -36,7 +36,7 @@ function validarProduto(array $dados, bool $criacao): array
     }
 
     return [
-        'id' => $id,
+        'id' => $criacao ? 'prod-' . bin2hex(random_bytes(16)) : $id,
         'nome' => $nome,
         'descricao' => $descricao,
         'preco' => number_format((float) $dados['preco'], 2, '.', ''),
@@ -52,9 +52,10 @@ if ($metodo === 'GET') {
     $modoAdmin = ($_GET['modo'] ?? '') === 'admin';
     if ($modoAdmin) {
         exigirAdmin();
-        $sql = 'SELECT id, nome, descricao, preco, categoria, evento, sentimento, img, ativo
+        $sql = "SELECT id, nome, descricao, preco, categoria, evento, sentimento, img, ativo
                 FROM produtos
-                ORDER BY id';
+                WHERE :busca_vazia = '' OR id LIKE :id OR nome LIKE :nome
+                ORDER BY id";
     } else {
         exigirAutenticacao();
         $sql = "SELECT id, nome, descricao, preco, categoria, evento, sentimento, img
@@ -64,7 +65,19 @@ if ($metodo === 'GET') {
     }
 
     try {
-        $produtos = $pdo->query($sql)->fetchAll();
+        $stmt = $pdo->prepare($sql);
+        $busca = $_GET['busca'] ?? '';
+        if ($modoAdmin && !is_string($busca)) {
+            responder(false, 'Informe um termo de busca válido.', [], 422);
+        }
+        if ($modoAdmin) {
+            $busca = trim($busca);
+            $termo = '%' . $busca . '%';
+            $stmt->execute(['busca_vazia' => $busca, 'id' => $termo, 'nome' => $termo]);
+        } else {
+            $stmt->execute();
+        }
+        $produtos = $stmt->fetchAll();
     } catch (PDOException $erro) {
         erroBanco($erro);
     }
@@ -93,7 +106,7 @@ if ($metodo === 'POST') {
         responder(true, 'Produto cadastrado com sucesso.', ['id' => $produto['id']], 201);
     } catch (PDOException $erro) {
         if (($erro->errorInfo[1] ?? null) === 1062) {
-            responder(false, 'Já existe um produto com este ID.', [], 409);
+            responder(false, 'Não foi possível gerar um ID único. Tente cadastrar novamente.', [], 409);
         }
         erroBanco($erro);
     }
@@ -128,12 +141,22 @@ if ($metodo === 'PUT') {
 if ($metodo === 'DELETE') {
     exigirAdmin();
     $dados = entrada(['DELETE']);
-    $id = trim((string) ($dados['id'] ?? ''));
+    $id = is_string($dados['id'] ?? null) ? trim($dados['id']) : '';
+    $definitivo = ($dados['definitivo'] ?? false) === true;
     if ($id === '' || strlen($id) > 40) {
         responder(false, 'ID do produto inválido.', [], 422);
     }
 
     try {
+        if ($definitivo) {
+            $stmt = $pdo->prepare('DELETE FROM produtos WHERE id = :id');
+            $stmt->execute(['id' => $id]);
+            if ($stmt->rowCount() === 0) {
+                responder(false, 'Produto não encontrado.', [], 404);
+            }
+            responder(true, 'Produto excluído definitivamente.');
+        }
+
         $stmt = $pdo->prepare('UPDATE produtos SET ativo = 0 WHERE id = :id');
         $stmt->execute(['id' => $id]);
         if ($stmt->rowCount() === 0) {
@@ -145,6 +168,9 @@ if ($metodo === 'DELETE') {
         }
         responder(true, 'Produto desativado com sucesso.');
     } catch (PDOException $erro) {
+        if (($erro->errorInfo[1] ?? null) === 1451) {
+            responder(false, 'Este produto tem pedidos vinculados e só pode ser desativado.', [], 409);
+        }
         erroBanco($erro);
     }
 }

@@ -39,13 +39,13 @@
         <input class="form-control" id="senha-confirmacao" name="confirmacao" type="password" autocomplete="new-password" minlength="8" required></div>
       <button type="submit" class="btn btn-verde">Alterar senha</button>
     </form>
-    <details id="desativar-conta" class="border-top mt-4 pt-3" hidden>
-      <summary class="text-danger fw-semibold">Desativar conta</summary>
-      <p class="small mt-2">Você perderá o acesso à conta. Os pedidos já registrados serão preservados.</p>
-      <form id="form-desativar" class="d-grid gap-3">
-        <div><label class="form-label" for="senha-desativar">Senha atual</label>
-          <input class="form-control" id="senha-desativar" name="senha_atual" type="password" autocomplete="current-password" required></div>
-        <button type="submit" class="btn btn-outline-danger rounded-pill">Confirmar desativação</button>
+    <details id="excluir-conta" class="border-top mt-4 pt-3" hidden>
+      <summary class="text-danger fw-semibold">Excluir minha conta</summary>
+      <p class="small mt-2">A exclusão é irreversível e encerra sua sessão. Contas com pedidos vinculados são preservadas.</p>
+      <form id="form-excluir" class="d-grid gap-3">
+        <div><label class="form-label" for="senha-excluir">Senha atual</label>
+          <input class="form-control" id="senha-excluir" name="senha_atual" type="password" autocomplete="current-password" required></div>
+        <button type="submit" class="btn btn-outline-danger rounded-pill">Excluir definitivamente</button>
       </form>
     </details>
 

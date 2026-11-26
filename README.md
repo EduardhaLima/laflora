@@ -1,6 +1,6 @@
 # LaFlora
 
-Projeto acadêmico de floricultura. O cliente cria uma conta, entra no catálogo, recebe sugestões do assistente floral e registra pedidos no carrinho. Pelo ícone **Minha conta**, o cliente pode editar o perfil, trocar a senha e desativar a conta. Administradores gerenciam usuários e produtos pelas telas do site. O PHP usa PDO para gravar dados no MySQL ou MariaDB. A interface usa HTML, CSS, JavaScript e Bootstrap.
+Projeto acadêmico de floricultura. O cliente cria uma conta, entra no catálogo, recebe sugestões do assistente floral, calculadas pelo PHP a partir dos produtos do banco e registra pedidos no carrinho. Pelo ícone **Minha conta**, o cliente pode editar o perfil, trocar a senha e excluir a conta após confirmar a senha. Contas com pedidos vinculados são preservadas. Administradores gerenciam usuários e produtos pelas telas do site. O PHP usa PDO para gravar dados no MySQL ou MariaDB. A interface usa HTML, CSS, JavaScript e Bootstrap.
 
 ## Rodar localmente
 
@@ -25,7 +25,7 @@ python testes/selenium_fluxos.py
 unset LAFLORA_TEST_ADMIN_PASSWORD
 ```
 
-No Safari, defina também `LAFLORA_TEST_BROWSER=safari`. Os testes cobrem cadastro, login, recomendação, registro do pedido, edição de perfil, troca de senha, desativação da própria conta, permissões e os dois CRUDs administrativos. O teste de checkout verifica o link sem abrir o WhatsApp nem enviar mensagem. Para uma conferência manual, encontre o número do pedido em `pedidos` e compare o total com as quantidades e preços em `pedido_itens`.
+No Safari, defina também `LAFLORA_TEST_BROWSER=safari`. Os testes cobrem cadastro, login, recomendação, registro do pedido, edição de perfil, troca de senha, exclusão da própria conta, permissões e os dois CRUDs administrativos. O teste de checkout verifica o link sem abrir o WhatsApp nem enviar mensagem. Para uma conferência manual, encontre o número do pedido em `pedidos` e compare o total com as quantidades e preços em `pedido_itens`.
 
 ## Publicar a demonstração
 
